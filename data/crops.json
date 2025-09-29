@@ -1,0 +1,59 @@
+[
+    {
+        "name": "மாப்பிள்ளை சம்பா",
+        "sowingSeason": "ஆடி மாசம் (July-August)",
+        "growthDuration": "120-135 நாட்கள்",
+        "growthStages": [
+            { "stageName": "நாற்றங்கால் (Nursery)", "durationDays": "0-25" },
+            { "stageName": "வளர்ச்சிப் பருவம் (Vegetative)", "durationDays": "26-70" },
+            { "stageName": "பூக்கும் பருவம் (Flowering)", "durationDays": "71-100" },
+            { "stageName": "அறுவடை (Harvest)", "durationDays": "101-135" }
+        ],
+        "diseases": [
+            {
+                "diseaseName": "குலை நோய் (Blast)",
+                "symptoms": "இலை மீது மஞ்சள் மையம் மற்றும் கருப்பு ஓரங்கள் கொண்ட புள்ளிகள்.",
+                "causes": ["அதிக ஈரப்பதம்", "அடர்த்தியான விதைப்பு"],
+                "chemicalControl": "Tricyclazole 75 WP",
+                "organicControl": "நீம் எண்ணெய் 5%"
+            },
+            {
+                "diseaseName": "பழுப்பு புள்ளி நோய் (Brown Spot)",
+                "symptoms": "இலைகளில் சிறிய கருப்பு புள்ளிகள்.",
+                "causes": ["பொட்டாசியம் குறைபாடு"],
+                "chemicalControl": "Mancozeb 75 WP",
+                "organicControl": "каоலின் (Kaolin) தெளிப்பு"
+            }
+        ],
+        "fertilizerRecommendation": {
+            "general": [{ "stage": 2, "fertilizer": "DAP", "quantityPerAcre": "25kg" }],
+            "organic": [{ "name": "ஜீவாமிர்தம்", "quantityPerAcre": "20 லிட்டர்" }]
+        },
+        "marketPriceHistory": [{ "year": 2023, "pricePerKg": 32 }]
+    },
+    {
+        "name": "கிச்சிலி சம்பா",
+        "sowingSeason": "புரட்டாசி பட்டம் (September-October)",
+        "growthDuration": "110-120 நாட்கள்",
+        "growthStages": [
+            { "stageName": "நாற்றங்கால்", "durationDays": "0-20" },
+            { "stageName": "வளர்ச்சி", "durationDays": "21-60" },
+            { "stageName": "பூக்கும் பருவம்", "durationDays": "61-90" },
+            { "stageName": "அறுவடை", "durationDays": "91-120" }
+        ],
+        "diseases": [
+            {
+                "diseaseName": "துங்ரோ வைரஸ் (Tungro Virus)",
+                "symptoms": "இலைகள் மஞ்சள் அல்லது ஆரஞ்சு நிறமாக மாறுதல், வளர்ச்சி குன்றுதல்.",
+                "causes": ["பச்சை தத்துப்பூச்சி மூலம் பரவுகிறது"],
+                "chemicalControl": "Thiamethoxam 25 WG",
+                "organicControl": "மஞ்சள் ஒட்டுப்பொறிகள்"
+            }
+        ],
+        "fertilizerRecommendation": {
+            "general": [{ "stage": 2, "fertilizer": "Urea", "quantityPerAcre": "20kg" }],
+            "organic": [{ "name": "பன்சகவ்யம்", "quantityPerAcre": "10 லிட்டர்" }]
+        },
+        "marketPriceHistory": [{ "year": 2023, "pricePerKg": 40 }]
+    }
+]

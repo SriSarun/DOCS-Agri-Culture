@@ -1,0 +1,50 @@
+<h1 class="text-2xl font-bold text-center text-green-800 mb-6">Edit crop details</h1>
+
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+   <form id="edit-crop-form">
+        <!-- Basic Details -->
+        <fieldset class="border p-4 rounded-lg mb-6">
+            <legend class="text-xl font-semibold px-2">Basic Details</legend>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="name" class="block text-gray-700 font-bold mb-1">Crop Name:</label>
+                    <input type="text" id="name" name="name" class="w-full px-3 py-2 border rounded-lg" required>
+                </div>
+                <div>
+                    <label for="sowingSeason" class="block text-gray-700 font-bold mb-1">Sowing Season:</label>
+                    <input type="text" id="sowingSeason" name="sowingSeason" class="w-full px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label for="growthDuration" class="block text-gray-700 font-bold mb-1">Growth Duration:</label>
+                    <input type="text" id="growthDuration" name="growthDuration" class="w-full px-3 py-2 border rounded-lg">
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- Disease Management (Dynamic Section) -->
+        <fieldset class="border p-4 rounded-lg">
+            <legend class="text-xl font-semibold px-2">Disease Management</legend>
+
+            <!-- Dynamic disease inputs will be inserted here -->
+            <div id="diseases-container" class="space-y-4">
+                <!-- Will be empty initially -->
+            </div>
+
+            <!-- "Add New Disease" Button -->
+            <button type="button" id="add-disease-btn" class="mt-4 bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600">
+                + Add New Disease
+            </button>
+        </fieldset>
+
+        <!-- Other dynamic sections (Growth Stages, Fertilizers) can be added here -->
+
+        <div class="text-center mt-8">
+           <button type="submit" class="bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-blue-800">
+                Save changes
+            </button>
+        </div>
+    </form>
+    <div id="form-message" class="mt-4 text-center"></div>
+</div>
+
+<script src="/js/edit-crop.js"></script>
