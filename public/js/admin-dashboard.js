@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const tableBody = document.getElementById('crop-table-body');
 
+    // Function to populate the table with crop data
     const populateTable = async () => {
         try {
             const response = await fetch('/api/crops');
@@ -13,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            // Populate table rows with crop data
             crops.forEach( crop => {
                 const row = `
                     <tr id="crop-${crop._id}">
@@ -33,6 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    
+    // Add event listener for delete buttons
     tableBody.addEventListener('click', async (event) => {
         if (event.target.classList.contains('delete-btn')) {
             const cropId = event.target.dataset.id;

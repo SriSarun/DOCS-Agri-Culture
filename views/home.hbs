@@ -1,5 +1,22 @@
 <h1 class="text-3xl font-bold text-center text-green-800"> Welcome to the Agricultural Guide website! </h1>
 
+<!-- Search bar -->
+<div class="mb-8 max-w-lg mx-auto">
+    <input id="search-box" type="search" placeholder="Search crops" class="w-full px-4 py-3 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300">
+</div>
+
+
+<div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
+    <select id="season-filter" class="filter-select w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-green-500">
+        <option value=""> All sowing periods </option>
+    </select>
+
+    <select id="duration-filter" class="filter-select w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-green-500">
+        <option value=""> All growing durations </option>
+    </select>
+</div>
+
+
 <div id="crop-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <p id="loading-message" class="col-span-full text-center text-gray-500"> Loads the crops </p>
 </div>
