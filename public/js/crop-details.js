@@ -1,104 +1,161 @@
 document.addEventListener('DOMContentLoaded', () => {
     const detailsContainer = document.getElementById('details-container');
-    const loadingMessage = document.getElementById('loading-message');
+    const cropId = window.location.pathname.split('/').pop();
 
-    // Get crop ID from URL
-    const pathParts = window.location.pathname.split('/');
-    const cropId = pathParts[pathParts.length - 1];
+    
+    let priceComparisonChart, monthlyTrendChart;
+    let currentChartType = 'bar';
+    let monthlyTrendData = null;
 
-    // Fetch crop details from API
+    
+    const renderPriceCharts = async (startDate = '', endDate = '') => {
+        try {
+            // Build the API URL with optional date filter query parameters.
+            const params = new URLSearchParams();
+            if (startDate) params.append('startDate', startDate);
+            if (endDate) params.append('endDate', endDate);
+            
+            const response = await fetch(`/api/crops/${cropId}/price-analytics?${params.toString()}`);
+            
+            // If the response is not OK (e.g., 404 Not Found, meaning no price data),
+            // remove the chart section if it exists and stop execution.
+            if (!response.ok) {
+                const existingContainer = document.getElementById('charts-section');
+                if (existingContainer) existingContainer.remove();
+                return;
+            }
+            
+            const data = await response.json();
+            monthlyTrendData = data.monthlyTrend; // Cache the fetched data.
+
+            // Dynamically create the HTML structure for the entire charts section.
+            const chartContainerHTML = `
+                <div class="mt-8" id="charts-section">
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Price Analysis</h2>
+                    
+                    <!-- Date Range Filter Form -->
+                    <div class="bg-white p-4 rounded-lg shadow-md mb-6 flex flex-col sm:flex-row items-center gap-4">
+                        <input type="date" id="startDate" class="flex-1 w-full p-2 border rounded-md">
+                        <input type="date" id="endDate" class="flex-1 w-full p-2 border rounded-md">
+                        <button id="filter-btn" class="bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Filter</button>
+                    </div>
+
+                    <!-- Grid container for the two charts -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-white p-6 rounded-lg shadow-md">
+                        <div>
+                            <h3 class="text-lg font-semibold text-center mb-2">Latest Price Comparison</h3>
+                            <canvas id="priceComparisonChart"></canvas>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="text-lg font-semibold">Monthly Trend</h3>
+                                <div id="chart-type-toggle" class="flex border rounded-md p-1">
+                                    <button data-chart-type="bar" class="chart-toggle-btn active px-2 py-1 text-xs">Bar</button>
+                                    <button data-chart-type="line" class="chart-toggle-btn px-2 py-1 text-xs">Line</button>
+                                </div>
+                            </div>
+                            <canvas id="monthlyTrendChart"></canvas>
+                        </div>
+                    </div>
+                </div>`;
+            
+            // If the charts section already exists from a previous render (e.g., after filtering), remove it first.
+            const existingContainer = document.getElementById('charts-section');
+            if (existingContainer) existingContainer.remove();
+            
+            // Insert the newly created HTML into the main details container.
+            detailsContainer.insertAdjacentHTML('beforeend', chartContainerHTML);
+
+            // Call the helper functions to actually draw the charts on the new canvas elements.
+            drawComparisonChart(data.latestPriceComparison);
+            drawMonthlyTrendChart();
+
+        } catch (error) {
+            console.error("Could not load price charts:", error);
+        }
+    };
+
+    
+    const drawComparisonChart = (data) => {
+        // If a chart instance already exists, destroy it to prevent memory leaks and rendering issues.
+        if (priceComparisonChart) priceComparisonChart.destroy();
+        const ctx = document.getElementById('priceComparisonChart').getContext('2d');
+        priceComparisonChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(p => p.location), // e.g., ['Market', 'Shop']
+                datasets: [{
+                    label: 'Price (₹/kg)',
+                    data: data.map(p => p.price), // e.g., [34, 40]
+                    backgroundColor: ['#22c55e', '#f97316'] // Green for market, Orange for shop
+                }]
+            },
+            options: {
+                indexAxis: 'y', // This makes the bar chart horizontal.
+                responsive: true
+            }
+        });
+    };
+
+    const drawMonthlyTrendChart = () => {
+        if (!monthlyTrendData) return; // Don't do anything if data hasn't been fetched.
+        if (monthlyTrendChart) monthlyTrendChart.destroy(); // Destroy old chart instance.
+
+        const ctx = document.getElementById('monthlyTrendChart').getContext('2d');
+        // Specific styling options for the line chart.
+        const lineOptions = {
+            backgroundColor: 'rgba(22, 101, 52, 0.2)', // Light green area fill
+            borderColor: '#166534', // Dark green line
+            tension: 0.1, // Makes the line slightly curved
+            fill: true
+        };
+        
+        monthlyTrendChart = new Chart(ctx, {
+            type: currentChartType, // Use the global variable ('bar' or 'line').
+            data: {
+                labels: monthlyTrendData.map(m => m.month), // e.g., ['2024-06', '2024-07']
+                datasets: [{
+                    label: 'Average Price (₹/kg)',
+                    data: monthlyTrendData.map(m => m.averagePrice),
+                    // Use a ternary operator to apply the correct styling based on the chart type.
+                    ...(currentChartType === 'line' ? lineOptions : { backgroundColor: '#166534' })
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: false } } // Start y-axis based on data, not always at 0.
+            }
+        });
+    };
+
+    
     const loadCropDetails = async () => {
         try {
             const response = await fetch(`/api/crops/${cropId}`);
-            if (!response.ok) throw new Error('Error in fetching crop details.');            
+            if (!response.ok) throw new Error('Could not fetch crop data.');
             const crop = await response.json();
 
-            loadingMessage.remove(); // Remove loading message
+            document.title = crop.name; // Set the browser tab title.
 
-            document.title = crop.name; // Set page title to crop name
+            // Combine cover image and gallery images into a single array for the carousel.
+            const images = [crop.coverImage, ...(crop.galleryImages || [])].filter(Boolean);
             
-
-            // Image carousel
-            let carouselHTML = '';
-            const images = [];
-            if (crop.coverImage) images.push(crop.coverImage);
-            if (crop.galleryImages) images.push(...crop.galleryImages);
-
-            if (images.length > 0) {
-                carouselHTML = `
-                    <div class="swiper mySwiper mb-8 rounded-lg shadow-lg">
-                        <div class="swiper-wrapper">
-                            ${images.map(imagePath => `
-                                <div class="swiper-slide bg-gray-200">
-                                    <img src="${imagePath}" alt="${crop.name}" class="w-full h-64 md:h-96 object-cover">
-                                </div>
-                            `).join('')}
-                        </div>
-
-                        <!-- Navigation Buttons -->
-                        <div class="swiper-button-next text-white"></div>
-                        <div class="swiper-button-prev text-white"></div>
-
-                        <!-- Pagination Dots -->
-                        <div class="swiper-pagination"></div>
+            // Build the Swiper.js carousel HTML only if there are images.
+            const carouselHTML = images.length ? `
+                <div class="swiper mySwiper mb-8 rounded-lg shadow-lg">
+                    <div class="swiper-wrapper">
+                        ${images.map(img => `
+                            <div class="swiper-slide bg-gray-200">
+                                <img src="${img}" alt="${crop.name}" class="w-full h-64 md:h-96 object-cover">
+                            </div>`).join('')}
                     </div>
-                `;
-            }
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-pagination"></div>
+                </div>` : '';
             
-            let contentHTML = `
-                ${carouselHTML}
-            
-                <div class="border-b pb-4 mb-6">
-                    <h1 class="text-3xl sm:text-4xl font-bold text-green-800">${crop.name}</h1>
-                    <p class="text-md text-gray-600 mt-2">Gestation period: ${crop.sowingSeason} | Growth period: ${crop.growthDuration}</p>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div>
-                        <h2 class="text-2xl font-semibold text-gray-700 mb-3">Stages of development</h2>
-                        <ul class="list-disc list-inside space-y-2">
-                            ${crop.growthStages.map(stage => `<li><b>${stage.stageName}:</b> ${stage.durationDays} Days </li>`).join('')}
-                        </ul>
-                    </div>
-                    
-                   
-                    <div>
-                        <h2 class="text-2xl font-semibold text-gray-700 mb-3">Fertilizer recommendation</h2>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <h3 class="font-bold mb-2">Common fertilizers:</h3>
-                            <ul class="list-disc list-inside space-y-1 text-sm">
-                                ${crop.fertilizerRecommendation.general.map(f => `<li><b>${f.fertilizer}:</b> ${f.quantityPerAcre}</li>`).join('')}
-                            </ul>
-                            <h3 class="font-bold mt-4 mb-2">Natural fertilizers:</h3>
-                             <ul class="list-disc list-inside space-y-1 text-sm">
-                                ${crop.fertilizerRecommendation.organic.map(f => `<li><b>${f.name}:</b> ${f.quantityPerAcre}</li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                
-                <div class="mt-8">
-                    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Disease management</h2>
-                    <div class="space-y-4">
-                        ${crop.diseases.map(disease => `
-                            <div class="border border-red-200 rounded-lg p-4">
-                                <h3 class="text-lg font-bold text-red-700">${disease.diseaseName}</h3>
-                                <p class="mt-2 text-sm"><b class="font-semibold">Symptoms:</b> ${disease.symptoms}</p>
-                                <p class="mt-1 text-sm"><b class="font-semibold">Reasons:</b> ${disease.causes.join(', ')}</p>
-                                <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-                                    <p><b class="font-semibold">Chemical method:</b> ${disease.chemicalControl}</p>
-                                    <p><b class="font-semibold">Natural method:</b> ${disease.organicControl}</p>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-            
-
-            // Disease section with image support
-            const diseasesHTML = crop.diseases.map(disease => `
+            // Build the HTML for the diseases section, including disease images.
+            const diseasesHTML = (crop.diseases || []).map(disease => `
                 <div class="border border-red-200 rounded-lg p-4 flex flex-col sm:flex-row gap-4">
                     ${disease.image ? `
                         <div class="w-full sm:w-1/4">
@@ -107,127 +164,73 @@ document.addEventListener('DOMContentLoaded', () => {
                     ` : ''}
                     <div class="w-full ${disease.image ? 'sm:w-3/4' : ''}">
                         <h3 class="text-lg font-bold text-red-700">${disease.diseaseName}</h3>
-                        <p class="mt-2 text-sm"><b class="font-semibold">Symptoms:</b> ${disease.symptoms}</p>
-                        <p class="mt-1 text-sm"><b class="font-semibold">Reasons:</b> ${disease.causes.join(', ')}</p>
-                        
+                        <p class="mt-2 text-sm"><strong>Symptoms:</strong> ${disease.symptoms}</p>
+                        <p class="mt-1 text-sm"><strong>Causes:</strong> ${disease.causes.join(', ')}</p>
                     </div>
                 </div>
             `).join('');
-           
-            detailsContainer.innerHTML = contentHTML; // Update the innerHTML of the detailsContainer element with the new HTML content
 
-
-            // Update disease section with image support
+            // Assemble the final HTML for the details section.
             detailsContainer.innerHTML = `
                 ${carouselHTML}
-                <div class="border-b pb-4 mb-6">
-                    <h1 class="text-3xl sm:text-4xl font-bold text-green-800">${crop.name}</h1>
-                    <p class="text-md text-gray-600 mt-2">Sowing season: ${crop.sowingSeason} | Growth period: ${crop.growthDuration}</p>
-                </div>
-                
-                <div class="mt-8">
-                    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Disease management</h2>
-                    <div class="space-y-4">${diseasesHTML}</div>
+                <div class="bg-white p-6 sm:p-8 rounded-lg shadow-md">
+                    <h1 class="text-3xl font-bold text-green-800 border-b pb-4">${crop.name}</h1>
+                    <div class="mt-4">
+                        <h2 class="text-2xl font-semibold mb-3">Disease Management</h2>
+                        <div class="space-y-4">${diseasesHTML}</div>
+                    </div>
+                    <!-- Other sections like Growth Stages, Fertilizers can be added here -->
                 </div>
             `;
 
-            // Initialize Swiper
-            if (images.length > 0) {
-                new Swiper(".mySwiper", {
-                    loop: true,
-                    pagination: {
-                        el: ".swiper-pagination",
-                        clickable: true,
-                    },
-                    navigation: {
-                        nextEl: ".swiper-button-next",
-                        prevEl: ".swiper-button-prev",
-                    },
-                    autoplay: {
-                        delay: 3000,
-                        disableOnInteraction: false,
-                    },
+            // If images were found, initialize the Swiper carousel.
+            if (images.length) {
+                new Swiper(".mySwiper", { 
+                    loop: true, 
+                    pagination: { el: ".swiper-pagination", clickable: true }, 
+                    navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" }
                 });
             }
-
-        
         } catch (error) {
-            loadingMessage.textContent = `error: ${error.message}`;
-            loadingMessage.className = 'text-center text-red-600 font-bold';
+            detailsContainer.innerHTML = `<p class="text-red-500 text-center font-bold">${error.message}</p>`;
         }
     };
 
-    loadCropDetails();
-
-
-
-    const renderPriceChart = async () => {
-        try {
-            const response = await fetch(`/api/crops/${cropId}/price-analytics`) 
-            if (!response.ok) return; // If there is no data, don't show graphs.
-            const data = await response.json();
-            
-            // Create container HTML
-            const chartContainerHTML = `
-                <div class="mt-8">
-                    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Price analysis</h2>
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-white p-6 rounded-lg shadow-md">
-                        <div>
-                            <h3 class="text-lg font-semibold text-center mb-2">Latest comparison (${new Date(data.latestPriceComparison[0].date).toLocaleDateString()})</h3>
-                            <canvas id="priceComparisonChart"></canvas>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-semibold text-center mb-2">Monthly average price trend</h3>
-                            <canvas id="monthlyTrendChart"></canvas>
-                        </div>
-                    </div>
-                </div>`;
-            detailsContainer.insertAdjacentHTML('beforeend', chartContainerHTML);
-
-
-            // Horizontal Bar Chart
-            const ctx1 = document.getElementById('priceComparisonChart').getContext('2d');
-            new Chart(ctx1, {
-                type: 'bar',
-                data: {
-                    labels: data.latestPriceComparison.map(p => p.location),
-                    datasets: [{
-                        label: 'Price (Rs/kg)',
-                        data: data.latestPriceComparison.map(p => p.price),
-                        backgroundColor: ['#22c55e', '#f97316'],
-                    }]
-                },
-                options: { indexAxis: 'y' } // This is what turns the map horizontally.
-            });
-
-
-            // Vertical Bar Chart
-            const ctx2 = document.getElementById('monthlyTrendChart').getContext('2d');
-            new Chart(ctx2, {
-                type: 'bar',
-                data: {
-                    labels: data.monthlyTrend.map(m => m.month),
-                    datasets: [{
-                        label: 'Average Price (Rs/kg)',
-                        data: data.monthlyTrend.map(m => m.averagePrice),
-                        backgroundColor: '#166534',
-                        borderColor: '#052e16',
-                        borderWidth: 1
-                    }]
-                },
-                options: { scales: { y: { beginAtZero: true } } }  // Ensures the Y axis starts at 0
-                
-            });
-
-        } catch (error) {
-            console.log("Unable to load price charts.");
-        }
-
-        // Initial load
-        const loadPage = async () => {
-            await loadCropDetails();
-            await renderPriceChart(); 
-        }  
+    
+    const setupEventListeners = () => {
+        detailsContainer.addEventListener('click', (event) => {
+            // Handler for the date filter button
+            if (event.target.id === 'filter-btn') {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                if (startDate && endDate) {
+                    renderPriceCharts(startDate, endDate); // Re-render charts with the selected date range.
+                } else {
+                    alert('Please select both a start and end date.');
+                }
+            }
+            // Handler for the chart type toggle buttons
+            const toggleBtn = event.target.closest('.chart-toggle-btn');
+            if (toggleBtn) {
+                const newType = toggleBtn.dataset.chartType;
+                if (newType !== currentChartType) {
+                    currentChartType = newType;
+                    drawMonthlyTrendChart(); // Redraw only the monthly chart with the new type.
+                    // Update the active button's style.
+                    document.querySelectorAll('.chart-toggle-btn').forEach(btn => btn.classList.remove('active'));
+                    toggleBtn.classList.add('active');
+                }
+            }
+        });
     };
+
+   
+    const loadPage = async () => {
+        await loadCropDetails();  // First, load the main crop info.
+        await renderPriceCharts(); // Then, load the price charts.
+        setupEventListeners();    // Finally, set up the event listeners for interaction.
+    };
+
+    // Start the page load process.
     loadPage();
 });

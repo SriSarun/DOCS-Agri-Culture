@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> {{{ title }}} </title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+
+</head>
+<body class="bg-gray-100">
+    <!-- Fixxed Slidebar -->
+    <aside class="w-64 bg-gray-800 text-white flex-shrink-0">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold"> Agricultural guide </h1>
+            <p class="text-sm text-gray-400"> Admin Dashboard </p>
+        </div>
+
+        <nav class="mt-8">
+            <ul>
+                <li>
+                    <a href="/admin/dashboard" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200">
+                       <!-- SVG Icon -->
+                       <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                        <span class="mx-4 font-medium"> Dashboard </span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/admin/add" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200">
+                        <!-- SVG Icon -->
+                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+                        <span class="mx-4 font-medium"> Add new crop </span>
+                    </a>
+                </li>
+
+                 <li>
+                    <a href="/" class="flex items-center px-6 py-3 mt-8 text-gray-400 hover:bg-gray-700 hover:text-white transition-colors duration-200">
+                       <!-- SVG Icon -->
+                       <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                       <span class="mx-4 font-medium"> Back to Home </span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto p-6 sm:p-8 md:p-10">
+        {{{ body }}}
+    </main>
+</body>
+</html>

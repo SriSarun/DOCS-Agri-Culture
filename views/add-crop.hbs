@@ -1,10 +1,11 @@
+<!-- Main heading for the add crop form page -->
 <h1 class="text-2xl font-bold text-center text-green-800 mb-6">Add New Crop Details</h1>
 
-<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+<!-- Container for the form with styling for layout and appearance -->
+<div class="bg-white p-8 rounded-lg shadow-md">
     <form id="add-crop-form">
-        <!-- Basic Details -->
         <fieldset class="border p-4 rounded-lg mb-6">
-            <legend class="text-xl font-semibold px-2">Basic Details</legend>
+            <legend class="text-xl font-semibold px-2">Basic Details & Images</legend>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label for="name" class="block text-gray-700 font-bold mb-1">Crop Name:</label>
@@ -22,42 +23,70 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+
+            <!-- Grid layout for image uploads -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div>
-                    <label for="coverImage" class="block text-gray-700 font-bold mb-1">Main photo (Cover Image):</label>
-                    <input type="file" id="coverImage" name="coverImage" class="w-full">
+                    <label for="coverImage" class="block text-gray-700 font-bold mb-1">Cover Image:</label>
+                    <input type="file" id="coverImage" name="coverImage" class="w-full text-sm">
                 </div>
                 <div>
-                    <label for="galleryImages" class="block text-gray-700 font-bold mb-1">Gallery photos (Gallery - Max 5):</label>
-                    <input type="file" id="galleryImages" name="galleryImages" class="w-full" multiple>
+                    <label for="galleryImages" class="block text-gray-700 font-bold mb-1">Gallery Images (Max 5):</label>
+                    <input type="file" id="galleryImages" name="galleryImages" class="w-full text-sm" multiple>
                 </div>
             </div>
         </fieldset>
 
-        <!-- Disease Management (Dynamic Section) -->
-        <fieldset class="border p-4 rounded-lg">
+
+        <!-- Section for growth stages -->
+        <fieldset class="border p-4 rounded-lg mb-6">
+            <legend class="text-xl font-semibold px-2">Growth Stages</legend>
+            <div id="growth-stages-container" class="space-y-3"></div>
+            <button type="button" id="add-stage-btn" class="mt-2 bg-gray-500 text-white font-bold py-1 px-3 text-sm rounded-lg hover:bg-gray-600">
+                + Add New Stage
+            </button>
+        </fieldset>
+
+        
+        <!-- Section for disease management -->
+        <fieldset class="border p-4 rounded-lg mb-6">
             <legend class="text-xl font-semibold px-2">Disease Management</legend>
-
-            <!-- Dynamic disease inputs will be inserted here -->
-            <div id="diseases-container" class="space-y-4">
-                <!-- Will be empty initially -->
-            </div>
-
-            <!-- "Add New Disease" Button -->
-            <button type="button" id="add-disease-btn" class="mt-4 bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600">
+            <div id="diseases-container" class="space-y-4"></div>
+            <button type="button" id="add-disease-btn" class="mt-2 bg-gray-500 text-white font-bold py-1 px-3 text-sm rounded-lg hover:bg-gray-600">
                 + Add New Disease
             </button>
         </fieldset>
 
-        <!-- Other dynamic sections (Growth Stages, Fertilizers) can be added here -->
 
+        <!-- Section for fertilizers and price details -->
+        <fieldset class="border p-4 rounded-lg">
+            <legend class="text-xl font-semibold px-2">Fertilizers & Prices</legend>
+            <div id="fertilizers-container" class="space-y-3"></div>
+            <button type="button" id="add-fertilizer-btn" class="mt-2 bg-gray-500 text-white font-bold py-1 px-3 text-sm rounded-lg hover:bg-gray-600">
+                + Add Fertilizer Recommendation
+            </button>
+
+            <!-- Separator line for visual clarity -->
+            <hr class="my-4">
+            <div id="prices-container" class="space-y-3"></div>
+            <button type="button" id="add-price-btn" class="mt-2 bg-gray-500 text-white font-bold py-1 px-3 text-sm rounded-lg hover:bg-gray-600">
+                + Add Price Detail
+            </button>
+        </fieldset>
+
+
+        <!-- Submit button for saving the crop -->
         <div class="text-center mt-8">
             <button type="submit" class="bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-blue-800">
                 Save Crop
             </button>
         </div>
     </form>
+
+    <!-- Container for displaying form submission messages -->
     <div id="form-message" class="mt-4 text-center"></div>
 </div>
 
+
+<!-- Include the admin JavaScript file for form functionality -->
 <script src="/js/admin.js"></script>

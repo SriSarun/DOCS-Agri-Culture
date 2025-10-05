@@ -1,186 +1,191 @@
 const { getDB } = require('../config/db');
 const { ObjectId } = require('mongodb');
 
-// GET /api/crops  ===== Harvest all crops =====
+
+
+// GET /api/crops (Search & Filter)
+// Retrieves all crops with optional search and filter parameters
 const getAllCrops = async (req, res) => {
     try {
-        const db = getDB();
-        const { search, season, duration } = req.query;
-
-        let query = {};
-
-        
-        if (search) {
-            query.name = { $regex: search, $options: 'i' };
-        }
-        
-       
-        if (season) {
-            query.sowingSeason = season;
-        }
-
-        
-        if (duration) {
-            query.growthDuration = duration;
-        }
-        
-        const crops = await db.collection('crops').find(query).toArray();
-        res.status(200).json(crops);
+        const db = getDB(); // Get MongoDB database instance
+        const { search, season, duration } = req.query; // Extract query parameters
+        let query = {}; // Initialize empty query object
+        if (search) query.name = { $regex: search, $options: 'i' }; // Case-insensitive search by crop name
+        if (season) query.sowingSeason = season; // Filter by sowing season
+        if (duration) query.growthDuration = duration; // Filter by growth duration
+        const crops = await db.collection('crops').find(query).toArray(); // Fetch crops matching the query
+        res.status(200).json(crops); // Return crops as JSON
 
     } catch (err) {
-        console.error('Error in obtaining crops:',err);
-        res.status(500).json({ message: 'An error occurred in the server.' })
+        console.error('Error in getAllCrops:', err);
+        res.status(500).json({ message: 'Error fetching crops' }); // Handle errors
     }
 };
 
-// POST /api/crops  ===== Add a new crop =====
+
+
+// GET /api/crops/filters
+// Retrieves distinct filter options for seasons and durations
+const getFilterOptions = async (req, res) => {
+    try {
+        const db = getDB(); // Get MongoDB database instance
+        const [seasons, durations] = await Promise.all([
+            db.collection('crops').distinct('sowingSeason'), // Get unique sowing seasons
+            db.collection('crops').distinct('growthDuration') // Get unique growth durations
+        ]);
+        res.status(200).json({ seasons, durations }); // Return filter options as JSON
+
+    } catch (err) {
+        console.error('Error in getFilterOptions:', err);
+        res.status(500).json({ message: 'Error fetching filter options' }); // Handle errors
+    }
+};
+
+
+
+// POST /api/crops
+// Adds a new crop to the database with optional image uploads
 const addCrop = async (req, res) => {
     try {
+        const db = getDB();
+        const cropData = req.body; 
+        const files = req.filesByName; // Use the file object created by our middleware
         
-        const cropData = JSON.parse(req.body.data);
-
-       
-        if (req.files) {
-            if (req.files.coverImage) {
-                cropData.coverImage = req.files.coverImage[0].path.replace('public', '');
-            }
-            if (req.files.galleryImages) {
-                cropData.galleryImages = req.files.galleryImages.map(file => file.path.replace('public', ''));
-            }
+        if (files) {
+            if (files.coverImage) cropData.coverImage = '/uploads/' + files.coverImage[0].filename;
+            if (files.galleryImages) cropData.galleryImages = files.galleryImages.map(file => '/uploads/' + file.filename);
             
-            
-            Object.keys(req.files).forEach(key => {
+            Object.keys(files).forEach(key => {
                 if (key.startsWith('diseaseImage_')) {
                     const index = parseInt(key.split('_')[1]);
                     if (cropData.diseases && cropData.diseases[index]) {
-                        cropData.diseases[index].image = req.files[key][0].path.replace('public', '');
+                        cropData.diseases[index].image = '/uploads/' + files[key][0].filename;
                     }
                 }
             });
         }
         
-        const db = getDB();
         const result = await db.collection('crops').insertOne(cropData);
-
-        res.status(201).json({ 
-            message: 'Crop and images added successfully', 
-            insertedId: result.insertedId 
-        });
+        res.status(201).json({ message: 'Crop added successfully', insertedId: result.insertedId });
 
     } catch (err) {
-        console.error('Error saving data.:', err);
-        res.status(500).json({ message: 'An error occurred on the server.' });
+        console.error('Error in addCrop:', err);
+        res.status(500).json({ message: 'Server error occurred while adding crop' });
     }
 };
 
 
- 
 
-// GET /api/crops/:id - To obtain a specific crop
+// GET /api/crops/:id
+// Retrieves a single crop by its ID
 const getCropById = async (req, res) => {
-    try{
-        const db = getDB();
-        const crop = await db.collection('crops').findOne({ _id: new ObjectId(req.params.id)});
-        if (!crop) {
-            return res.status(404).json({ message: 'Crop not found'});
-        }
-        res.status(200).json(crop);
-        
-    }catch (err) {
-        res.status(500).json({ message: 'Server Error'});
-    }
-};
-
-
-// PUT /api/crops/:id - Update Crop
-const updateCrop = async (req, res) => {
-    try {
-        const db = getDB();
-        const { name, sowingSeason, growthDuration } = req.body;
-         const result = await db.collection('crops').updateOne(
-            { _id: new ObjectId(req.params.id) }, 
-            { $set: { name, sowingSeason, growthDuration } } 
-        );
-
-        if (result.matchedCount === 0) {
-           return res.status(404).json({ message: 'Crop not found' });
-        }
-        res.status(200).json({ message: 'The crop was successfully renewed'});
-    } catch (err) {
-        res.status(500).json({ message: 'server error'});
-    }
-
-};
-
-
-// DELETE /api/crops/:id - Delete Crop
-const deleteCrop = async (req, res ) => {
-    try {
-        const db = getDB();
-        const result = await db.collection('crops').deleteOne({ _id: new ObjectId(req.params.id) });
-
-        
-        if ( result.deletedCount === 0) {
-            return res.status(404).json({ message: 'Crop not found'});
-        }
-        res.status(200).json({ message: 'The crop was successfully removed' });
-
-    } catch (err) {
-        res.status(500).json({ message: 'server error' });
-    }
-
-};
-
-
-// GET /api/crops/filters - To get filter options
-const getFilterOptions = async (req, res) => {
-    try {
-        const db = getDB();
-
-        const [seasons, durations] = await Promise.all([
-            db.collection('crops').distinct('sowingSeason'),
-            db.collection('crops').distinct('growthDuration')
-        ]);
-
-        res.status(200).json({ seasons, durations });
-    } catch (err) {
-        console.error('Error getting filter options:', err);
-        res.status(500).json({ message: 'server error' });
-    }
-};
-
-
-// GET /api/crops/:id/price-analytics - To get the price analytics of a specific crop
-const getCropPriceAnalytic = async (req, res) => {
     try {
         const db = getDB();
         const crop = await db.collection('crops').findOne({ _id: new ObjectId(req.params.id) });
+        if (!crop) return res.status(404).json({ message: 'Crop not found' });
+        res.status(200).json(crop);
+
+    } catch (err) {
+        console.error('Error in getCropById:', err);
+        res.status(500).json({ message: 'Server error occurred' });
+    }
+};
 
 
-        // Check if crop exists and has market price history
+
+// PUT /api/crops/:id
+// Updates an existing crop by its ID
+const updateCrop = async (req, res) => {
+    try {
+        const db = getDB();
+        const cropData = req.body;
+        const files = req.filesByName; 
+    
+        // Handle file uploads (similar to addCrop)
+        if (files) {
+            if (files.coverImage) cropData.coverImage = '/uploads/' + files.coverImage[0].filename;
+            if (files.galleryImages) cropData.galleryImages = files.galleryImages.map(file => '/uploads/' + file.filename);
+            
+            Object.keys(files).forEach(key => {
+                if (key.startsWith('diseaseImage_')) {
+                    const index = parseInt(key.split('_')[1]);
+                    if (cropData.diseases && cropData.diseases[index]) {
+                        cropData.diseases[index].image = '/uploads/' + files[key][0].filename;
+                    }
+                }
+            });
+        }
+        
+        const { _id, ...dataToUpdate } = cropData;
+        const result = await db.collection('crops').updateOne(
+            { _id: new ObjectId(req.params.id) },
+            { $set: dataToUpdate }
+        );
+        if (result.matchedCount === 0) return res.status(404).json({ message: 'Crop not found' });
+        res.status(200).json({ message: 'Crop updated successfully' });
+
+    } catch (err) {
+        console.error('Error in updateCrop:', err);
+        res.status(500).json({ message: 'Server error occurred while updating crop' });
+    }
+};
+
+
+
+
+// DELETE /api/crops/:id
+// Deletes a crop by its ID
+const deleteCrop = async (req, res) => {
+    try {
+        const db = getDB();
+        const result = await db.collection('crops').deleteOne({ _id: new ObjectId(req.params.id) });
+        if (result.deletedCount === 0) return res.status(404).json({ message: 'Crop not found' });
+        res.status(200).json({ message: 'Crop deleted successfully' });
+
+    } catch (err) {
+        console.error('Error in deleteCrop:', err);
+        res.status(500).json({ message: 'Server error occurred' });
+    }
+};
+
+
+
+// GET /api/crops/:id/price-analytics
+// Retrieves price analytics for a specific crop
+const getCropPriceAnalytics = async (req, res) => {
+    try {
+        const db = getDB();
+        const { startDate, endDate } = req.query;
+        const crop = await db.collection('crops').findOne({ _id: new ObjectId(req.params.id) });
+
         if (!crop || !crop.marketPriceHistory || crop.marketPriceHistory.length === 0) {
-            return res.status(404).json({ message: 'No crop found or no market price history available.' });
+            return res.status(404).json({ message: 'No price data available' });
+        }
+        
+        let pricesToAnalyze = crop.marketPriceHistory;
+        if (startDate && endDate) {
+            pricesToAnalyze = pricesToAnalyze.filter(p => {
+                const priceDate = new Date(p.date);
+                return priceDate >= new Date(startDate) && priceDate <= new Date(endDate);
+            });
+        }
+        
+        if (pricesToAnalyze.length === 0) {
+            return res.status(404).json({ message: 'No data available for the selected range' });
         }
 
-
-        // Calculate the average price
-        const sortedPrices = [...crop.marketPriceHistory].sort((a, b) => new Date(b.date) - new Date(a.date));
+        const sortedPrices = [...pricesToAnalyze].sort((a, b) => new Date(b.date) - new Date(a.date));
         const latestDate = sortedPrices[0].date;
         const latestPriceComparison = sortedPrices.filter(p => p.date === latestDate);
 
-
-        // Calculate the average price
         const monthlyData = {};
         sortedPrices.forEach(p => {
-            const month = new Date(p.date).toISOString().slice(0, 7); // "YYYY-MM"
-            if (!monthlyData[month]) {
-                monthlyData[month] = { total: 0, count: 0 };
-            }
+            const month = new Date(p.date).toISOString().slice(0, 7);
+            if (!monthlyData[month]) monthlyData[month] = { total: 0, count: 0 };
             monthlyData[month].total += p.price;
             monthlyData[month].count += 1;
         });
-
-        // Calculate the monthly trend
+        
         const monthlyTrend = Object.keys(monthlyData).map(month => ({
             month: month,
             averagePrice: monthlyData[month].total / monthlyData[month].count
@@ -188,15 +193,13 @@ const getCropPriceAnalytic = async (req, res) => {
 
         res.status(200).json({ latestPriceComparison, monthlyTrend });
 
-    } catch (error) {
-        console.error('Error retrieving price analysis:', error);
-        res.status(500).json({ message: 'Server error' });
-        
+    } catch (err) {
+        console.error('Error in getCropPriceAnalytics:', err);
+        res.status(500).json({ message: 'Error fetching price analytics' });
     }
-
 };
 
-module.exports = { /*...,*/ getCropPriceAnalytics };
+
 
 // Export all controller functions
 module.exports = {
@@ -205,5 +208,6 @@ module.exports = {
     addCrop,
     getCropById,
     updateCrop,
-    deleteCrop
+    deleteCrop,
+    getCropPriceAnalytics
 };

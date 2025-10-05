@@ -1,140 +1,215 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Get all necessary form elements from the DOM
     const form = document.getElementById('add-crop-form');
     const messageDiv = document.getElementById('form-message');
-    const addDiseaseBtn = document.getElementById('add-disease-btn');
+
+    // Containers for dynamic fields
+    const stagesContainer = document.getElementById('growth-stages-container');
     const diseasesContainer = document.getElementById('diseases-container');
-    let diseaseCounter = 0;
+    const fertilizersContainer = document.getElementById('fertilizers-container');
+    const pricesContainer = document.getElementById('prices-container');
 
-    // Function to add a new disease entry
-    const addDiseaseEntry = () => {
-        const index = diseaseCounter++;
-        const diseaseHTML = `
-            <div class="disease-entry border p-4 rounded-lg bg-gray-50 relative" data-index="${index}">
-                <button type="button" class="remove-disease-btn absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl">&times;</button>
-                <h4 class="font-semibold mb-2 text-gray-700">Disease #${index + 1}</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <input type="text" name="diseaseName" placeholder="Disease Name" class="w-full p-2 border rounded" required>
-                    <input type="text" name="symptoms" placeholder="Symptoms" class="w-full p-2 border rounded" required>
-                    <input type="text" name="causes" placeholder="Causes (separate with commas)" class="md:col-span-2 w-full p-2 border rounded" required>
-                    <input type="text" name="chemicalControl" placeholder="Chemical Control" class="w-full p-2 border rounded" required>
-                    <input type="text" name="organicControl" placeholder="Organic Control" class="w-full p-2 border rounded" required>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-600">Disease Image</label>
-                        <input type="file" name="diseaseImage" class="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100" accept="image/*">
-                    </div>
-                </div>
+    // Buttons to add new dynamic fields
+    const addStageBtn = document.getElementById('add-stage-btn');
+    const addDiseaseBtn = document.getElementById('add-disease-btn');
+    const addFertilizerBtn = document.getElementById('add-fertilizer-btn');
+    const addPriceBtn = document.getElementById('add-price-btn');
+
+
+
+    // --- Helper functions to create HTML for dynamic entries ---
+
+    // Each function returns a string of HTML for a new entry.
+    const createStageHTML = () => `
+        <div class="dynamic-entry grid grid-cols-1 md:grid-cols-6 gap-2 items-center">
+            <input type="text" name="stageName" placeholder="Stage Name" class="md:col-span-3 p-2 border rounded">
+            <input type="text" name="stageDuration" placeholder="Duration (e.g., 0-25 days)" class="md:col-span-2 p-2 border rounded">
+            <button type="button" class="remove-btn md:col-span-1 text-red-500 font-bold justify-self-center">X</button>
+        </div>
+    `;
+
+    // Similar functions for diseases, fertilizers, and prices
+    const createDiseaseHTML = () => `
+        <div class="dynamic-entry border p-3 rounded-md bg-gray-50 relative" data-type="disease">
+            <button type="button" class="remove-btn absolute top-2 right-2 text-red-500 font-bold">X</button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                <input type="text" name="diseaseName" placeholder="Disease Name" class="w-full p-1 border rounded">
+                <input type="text" name="symptoms" placeholder="Symptoms" class="w-full p-1 border rounded">
+                <input type="text" name="causes" placeholder="Causes (comma-separated)" class="w-full p-1 border rounded">
+                <input type="text" name="chemicalControl" placeholder="Chemical Control" class="w-full p-1 border rounded">
+                <input type="text" name="organicControl" placeholder="Organic Control" class="w-full p-1 border rounded">
+                <input type="file" name="diseaseImage" class="w-full mt-1 text-xs col-span-2">
             </div>
-        `;
-        diseasesContainer.insertAdjacentHTML('beforeend', diseaseHTML);
-    };
+        </div>
+    `;
+    
 
-    // Add event listener for adding a disease entry
-    addDiseaseBtn.addEventListener('click', addDiseaseEntry);
+    // Function to create HTML for a fertilizer entry
+    const createFertilizerHTML = () => `
+        <div class="dynamic-entry grid grid-cols-1 md:grid-cols-7 gap-2 items-center">
+            <select name="fertilizerType" class="md:col-span-2 p-2 border rounded">
+                <option value="general">General</option>
+                <option value="organic">Organic</option>
+            </select>
+            <input type="text" name="fertilizerName" placeholder="Fertilizer/Product Name" class="md:col-span-2 p-2 border rounded">
+            <input type="text" name="fertilizerQty" placeholder="Quantity per Acre" class="md:col-span-2 p-2 border rounded">
+            <button type="button" class="remove-btn md:col-span-1 text-red-500 font-bold justify-self-center">X</button>
+        </div>
+    `;
 
-    // Function to remove a disease entry
-    diseasesContainer.addEventListener('click', (event) => {
-        if (event.target.classList.contains('remove-disease-btn')) {
-            event.target.closest('.disease-entry').remove();
+
+    // Function to create HTML for a price entry
+    const createPriceHTML = () => `
+        <div class="dynamic-entry grid grid-cols-1 md:grid-cols-7 gap-2 items-center">
+            <input type="date" name="priceDate" class="md:col-span-2 p-2 border rounded">
+            <select name="priceLocation" class="md:col-span-2 p-2 border rounded">
+                <option value="Market"> Market </option>
+                <option value="Shop"> Shop </option>
+            </select>
+            <input type="number" name="priceValue" placeholder="Price (₹/kg)" class="md:col-span-2 p-2 border rounded">
+            <button type="button" class="remove-btn md:col-span-1 text-red-500 font-bold justify-self-center">X</button>
+        </div>
+    `;
+
+    // Add similar createFertilizerHTML and createPriceHTML functions here...
+    // --- Event Listeners for adding dynamic fields ---
+    addStageBtn.addEventListener('click', () => stagesContainer.insertAdjacentHTML('beforeend', createStageHTML()));
+    addDiseaseBtn.addEventListener('click', () => diseasesContainer.insertAdjacentHTML('beforeend', createDiseaseHTML()));
+    addFertilizerBtn.addEventListener('click', () => fertilizersContainer.insertAdjacentHTML('beforeend', createFertilizerHTML()));
+    addPriceBtn.addEventListener('click', () => pricesContainer.insertAdjacentHTML('beforeend', createPriceHTML()));
+
+   
+    // Generic remove button handler using event delegation
+    form.addEventListener('click', (event) => {
+        if (event.target.classList.contains('remove-btn')) {
+            event.target.closest('.dynamic-entry').remove();
         }
     });
 
-    // Main form submission function
+    // --- Form Submission Handler ---
     form.addEventListener('submit', async (event) => {
-        event.preventDefault(); // Prevent default form submission
+        event.preventDefault(); // Prevent default browser form submission
 
-        messageDiv.textContent = 'Collecting data...';
-        messageDiv.className = 'text-blue-600';
-
-        // Step 1: Collect text data into an object
+        // Collect all text data into a structured JavaScript object
         const textData = {
             name: form.querySelector('[name="name"]').value,
             sowingSeason: form.querySelector('[name="sowingSeason"]').value,
             growthDuration: form.querySelector('[name="growthDuration"]').value,
-            diseases: []
+            growthStages: [],
+            diseases: [],
+            fertilizerRecommendation: { general: [], organic: [] }, 
+            marketPriceHistory: [] 
+            
         };
 
-        // Validate basic form fields
-        if (!textData.name || !textData.sowingSeason || !textData.growthDuration) {
-            messageDiv.textContent = 'Error: Please fill in all required crop fields.';
-            messageDiv.className = 'text-red-600 font-bold';
-            return;
-        }
-
-        // Step 2: Collect disease data
-        let hasInvalidDisease = false;
-        diseasesContainer.querySelectorAll('.disease-entry').forEach(entry => {
-            const disease = {
-                diseaseName: entry.querySelector('[name="diseaseName"]').value,
-                symptoms: entry.querySelector('[name="symptoms"]').value,
-                causes: entry.querySelector('[name="causes"]').value.split(',').map(s => s.trim()).filter(s => s),
-                chemicalControl: entry.querySelector('[name="chemicalControl"]').value,
-                organicControl: entry.querySelector('[name="organicControl"]').value
-            };
-
-            // Validate disease fields: all must be filled or none
-            if (disease.diseaseName && disease.symptoms && disease.causes.length && disease.chemicalControl && disease.organicControl) {
-                textData.diseases.push(disease);
-            } else if (disease.diseaseName || disease.symptoms || disease.causes.length || disease.chemicalControl || disease.organicControl) {
-                hasInvalidDisease = true;
+        // Collect dynamic growth stages
+        stagesContainer.querySelectorAll('.dynamic-entry').forEach(entry => {
+            const stageName = entry.querySelector('[name="stageName"]').value;
+            if (stageName) {
+                textData.growthStages.push({
+                    stageName: stageName,
+                    durationDays: entry.querySelector('[name="stageDuration"]').value
+                });
             }
         });
 
-        // Check for incomplete disease entries
-        if (hasInvalidDisease) {
-            messageDiv.textContent = 'Error: All disease fields must be fully completed or left empty.';
-            messageDiv.className = 'text-red-600 font-bold';
-            return;
-        }
+        // Collect dynamic diseases
+        diseasesContainer.querySelectorAll('.dynamic-entry').forEach(entry => {
+            const diseaseName = entry.querySelector('[name="diseaseName"]').value;
+            if (diseaseName) {
+                textData.diseases.push({
+                    diseaseName: diseaseName,
+                    symptoms: entry.querySelector('[name="symptoms"]').value,
+                    causes: entry.querySelector('[name="causes"]').value.split(',').map(s => s.trim()),
+                    chemicalControl: entry.querySelector('[name="chemicalControl"]').value,
+                    organicControl: entry.querySelector('[name="organicControl"]').value
+                });
+            }
+        });
 
-        // Step 3: Create FormData object
+
+          // Collect dynamic fertilizers
+        fertilizersContainer.querySelectorAll('.dynamic-entry').forEach(entry => {
+            const type = entry.querySelector('[name="fertilizerType"]').value;
+            const name = entry.querySelector('[name-="fertilizerName"]').value;
+            if (name) {
+                const fertilizerData = {
+                    name: name,
+                    quantityPerAcre: entry.querySelector('[name="fertilizerQty"]').value
+                };
+                if (type === 'general') {
+                    // Adjust key to match the schema
+                    fertilizerData.fertilizer = fertilizerData.name;
+                    delete fertilizerData.name;
+                    textData.fertilizerRecommendation.general.push(fertilizerData);
+                } else {
+                    textData.fertilizerRecommendation.organic.push(fertilizerData);
+                }
+            }
+        });
+
+        // Collect dynamic prices
+        pricesContainer.querySelectorAll('.dynamic-entry').forEach(entry => {
+            const date = entry.querySelector('[name="priceDate"]').value;
+            const price = entry.querySelector('[name="priceValue"]').value;
+            if (date && price) {
+                textData.marketPriceHistory.push({
+                    date: date,
+                    location: entry.querySelector('[name="priceLocation"]').value,
+                    price: parseFloat(price)
+                });
+            }
+        });
+
+        // Create a FormData object to handle both text and files
         const formData = new FormData();
-
-        // Step 4: Append text data as JSON
+        
+        // Append the structured text data as a JSON string
         formData.append('data', JSON.stringify(textData));
 
-        // Step 5: Append files to FormData
+        // Append files
         const coverImageInput = form.querySelector('#coverImage');
-        if (coverImageInput.files[0]) {
-            formData.append('coverImage', coverImageInput.files[0]);
-        }
+        if (coverImageInput.files[0]) formData.append('coverImage', coverImageInput.files[0]);
 
         const galleryImagesInput = form.querySelector('#galleryImages');
         for (const file of galleryImagesInput.files) {
             formData.append('galleryImages', file);
         }
 
-        diseasesContainer.querySelectorAll('.disease-entry').forEach((entry, index) => {
+        // Append disease images with a unique key based on their index
+        diseasesContainer.querySelectorAll('.dynamic-entry').forEach((entry, index) => {
             const imageInput = entry.querySelector('[name="diseaseImage"]');
             if (imageInput && imageInput.files[0]) {
                 formData.append(`diseaseImage_${index}`, imageInput.files[0]);
             }
         });
-
-        messageDiv.textContent = 'Uploading...';
+        
+        messageDiv.textContent = 'Saving...';
+        messageDiv.className = 'text-blue-600';
 
         try {
-            // Step 6: Send FormData to the backend
+            // 5. Send the FormData object using fetch
             const response = await fetch('/api/crops', {
                 method: 'POST',
-                body: formData // Browser sets Content-Type to multipart/form-data automatically
+                // DO NOT set Content-Type header. The browser will set it correctly for FormData.
+                body: formData,
             });
 
             const result = await response.json();
-            if (!response.ok) {
-                throw new Error(result.error || 'Something went wrong');
-            }
+            if (!response.ok) throw new Error(result.message || 'An error occurred.');
 
-            messageDiv.textContent = 'Crop successfully saved!';
+            messageDiv.textContent = result.message;
             messageDiv.className = 'text-green-600 font-bold';
             form.reset();
-            diseasesContainer.innerHTML = ''; // Clear disease entries
-            diseaseCounter = 0; // Reset disease counter
+            // Clear dynamic fields
+            stagesContainer.innerHTML = '';
+            diseasesContainer.innerHTML = '';
+            fertilizersContainer.innerHTML = '';
+            pricesContainer.innerHTML = '';
+
         } catch (error) {
             messageDiv.textContent = `Error: ${error.message}`;
             messageDiv.className = 'text-red-600 font-bold';
         }
     });
-
-    // Show one disease entry by default on page load
-    addDiseaseEntry();
 });
