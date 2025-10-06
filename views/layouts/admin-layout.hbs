@@ -1,56 +1,114 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ta">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> {{{ title }}} </title>
+    <title>{{{ title }}}</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script> <!-- Tailwind CSS CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" /> <!-- Swiper CSS -->
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <!-- Custom styles for the layout -->
+    <style>
+        /* A custom scrollbar for a cleaner look in Webkit browsers (Chrome, Safari) */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
 
 </head>
 <body class="bg-gray-100">
-    <!-- Fixxed Slidebar -->
-    <aside class="w-64 bg-gray-800 text-white flex-shrink-0">
-        <div class="p-6">
-            <h1 class="text-2xl font-bold"> Agricultural guide </h1>
-            <p class="text-sm text-gray-400"> Admin Dashboard </p>
+
+    <div class="flex h-screen bg-gray-200">
+        <!-- 1. Fixed Sidebar -->
+        <aside class="w-64 bg-gray-800 text-white flex-shrink-0 flex flex-col">
+            <!-- Sidebar Header -->
+            <div class="h-20 flex items-center justify-center bg-gray-900">
+                <h1 class="text-2xl font-bold"> Smart Farmer </h1>
+            </div>
+            
+            <!-- Sidebar Navigation -->
+            <nav class="flex-grow mt-6">
+
+                
+                <a href="/" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200">
+                   <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                   <span class="mx-4 font-medium"> Home </span>
+                </a>
+
+                <a href="/admin/dashboard" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span class="mx-4 font-medium"> Crop Management </span>
+                </a>
+
+                <a href="/notifications" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5" />
+                    </svg>
+                    <span class="mx-4 font-medium"> Notification </span>
+                </a>
+
+                <a href="/settings" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                    <span class="mx-4 font-medium"> Setting </span>
+                </a>
+
+                <a href="/home" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                        <path d="M14 17h2.75A2.25 2.25 0 0 0 19 14.75v-9.5A2.25 2.25 0 0 0 16.75 3H14v14ZM12.5 3h-5v14h5V3ZM3.25 3H6v14H3.25A2.25 2.25 0 0 1 1 14.75v-9.5A2.25 2.25 0 0 1 3.25 3Z" />
+                    </svg>
+
+                    <span class="mx-4 font-medium"> View </span>
+                </a>
+            </nav>
+
+            <!-- Sidebar Footer (Back to Home) -->
+            <div class="mb-4">
+                 <a href="#" class="flex items-center px-6 py-3 text-gray-400 hover:bg-gray-700 hover:text-white">
+                   <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                   <span class="mx-4 font-medium"> Logout </span>
+                </a>
+            </div>
+
+            
+        </aside>
+
+        <!-- 2. Main Content Area (Sidebar + Top Bar) -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Bar -->
+            <header class="h-20 bg-white shadow-md flex items-center justify-between px-6">
+                <div class="flex items-center">
+                    <h2 class="text-xl font-semibold text-gray-700"> Admin Dashboard </h2>
+                </div>
+                <div class="flex items-center">
+                    <!-- Placeholder for user profile or other icons -->
+                    <div class="h-10 w-10 bg-gray-300 rounded-full"></div>
+                </div>
+            </header>
+
+            <!-- Main content that will be scrollable -->
+            <main class="flex-1 overflow-y-auto p-6 sm:p-8 md:p-10">
+                {{{ body }}}
+            </main>
         </div>
+    </div>
 
-        <nav class="mt-8">
-            <ul>
-                <li>
-                    <a href="/admin/dashboard" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200">
-                       <!-- SVG Icon -->
-                       <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                        <span class="mx-4 font-medium"> Dashboard </span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="/admin/add" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200">
-                        <!-- SVG Icon -->
-                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
-                        <span class="mx-4 font-medium"> Add new crop </span>
-                    </a>
-                </li>
-
-                 <li>
-                    <a href="/" class="flex items-center px-6 py-3 mt-8 text-gray-400 hover:bg-gray-700 hover:text-white transition-colors duration-200">
-                       <!-- SVG Icon -->
-                       <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-                       <span class="mx-4 font-medium"> Back to Home </span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </aside>
-
-    <!-- Main Content Area -->
-    <main class="flex-1 overflow-y-auto p-6 sm:p-8 md:p-10">
-        {{{ body }}}
-    </main>
+    <!-- JavaScript libraries at the end for faster page load -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,95 @@
+<div>
+    <h1 class="text-3xl font-bold text-gray-800 mb-8">System Settings</h1>
+
+    <!-- Tabs for different settings categories -->
+    <div class="mb-6 border-b border-gray-200">
+        <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+            <a href="#" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-green-500 text-green-600">
+                General
+            </a>
+            <a href="#" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                User Management
+            </a>
+            <a href="#" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                AI Configuration
+            </a>
+             <a href="#" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                Notifications
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main settings content area -->
+    <div class="space-y-10">
+        
+        <!-- 1. General Settings Section -->
+        <div class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-3">General Application Settings</h2>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="font-medium text-gray-700">Maintenance Mode</p>
+                        <p class="text-sm text-gray-500">Temporarily disable user access to the site.</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" value="" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                    </label>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="font-medium text-gray-700">Allow New User Registrations</p>
+                        <p class="text-sm text-gray-500">Control whether new users can create accounts.</p>
+                    </div>
+                     <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" value="" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. User Management Section -->
+        <div class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-3">User Management</h2>
+            <p class="text-gray-600">Here you can view, edit, or remove user accounts. (Feature to be implemented)</p>
+            <div class="mt-4">
+                <button class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700">
+                    View All Users
+                </button>
+            </div>
+        </div>
+
+        <!-- 3. AI Configuration Section -->
+        <div class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-3">AI Model Configuration</h2>
+            <p class="text-sm text-gray-500 mb-4">Configure the parameters for the AI-powered crop recommendation and advisory system.</p>
+            <div class="space-y-4">
+                <div>
+                    <label for="ai-model" class="block text-sm font-medium text-gray-700">Active AI Model</label>
+                    <select id="ai-model" name="ai-model" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md">
+                        <option>GPT-4 (Default)</option>
+                        <option>Gemini Pro</option>
+                        <option>Custom Trained Model v1.2</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="api-key" class="block text-sm font-medium text-gray-700">API Key</label>
+                    <input type="password" name="api-key" id="api-key" value="••••••••••••••••" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                </div>
+                 <div>
+                    <label for="confidence-threshold" class="block text-sm font-medium text-gray-700">Confidence Threshold</label>
+                    <input type="range" id="confidence-threshold" min="0" max="1" step="0.1" value="0.7" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                    <p class="text-xs text-gray-500 text-right">Current: 70%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="flex justify-end">
+            <button type="submit" class="bg-green-700 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-green-800 transition-all">
+                Save Changes
+            </button>
+        </div>
+    </div>
+</div>

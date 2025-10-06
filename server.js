@@ -1,5 +1,5 @@
 // Import the required packages
-const express = require('express'); // Import express
+const express = require('express'); 
 const { engine } = require('express-handlebars'); // Import handlebars
 const path = require('path'); // Import path module
 const { connectDB } = require('./config/db'); // Import the database connection functions
@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 // Handlebars Setup
-app.engine('hbs', engine({ extname: '.hbs', defaultLayout: 'main' }));
+app.engine('hbs', engine({ extname: '.hbs', defaultLayout: 'main', layoutsDir: path.join(__dirname, 'views', 'layouts')}));
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -32,10 +32,33 @@ app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 app.use('/api', cropRoutes); // Use the crop routes for /api path
 
 
-// Page Rendering Routes
-app.get('/', (req, res) => {
-    res.render('home', { title: 'Agriculture Guide' }); // render the home page with the title 'Agriculture Guide'
 
+
+// Root Route - Render the admin main dashboard (1st page after login)
+app.get('/', (req, res) => {
+    res.render('admin-main-dashboard', { 
+        title: ' Admin Main Dashboard',
+        layout: 'admin-layout' 
+    });
+});
+
+
+// Page Rendering Routes
+app.get('/home', (req, res) => {
+    res.render('home', { 
+        title: 'Agriculture Guide', // render the home page with the title 'Agriculture Guide'
+        layout: 'admin-layout' 
+   }); 
+});
+
+
+
+// Crop details (GET request)
+app.get('/crops/:id', (req, res) => {
+    res.render('crop-details', { 
+        title: 'Crop details', // render the crop-details page with the title 'Crop details'
+        layout: 'admin-layout' 
+    });  
 });
 
 
@@ -49,6 +72,16 @@ app.get('/admin/dashboard', (req, res) => {
 });
 
 
+
+// Add new crop with custom layout (GET request)
+app.get('/admin/add', (req, res) => {
+    res.render('add-crop', { 
+        title: 'Add the new crop',
+        layout: 'admin-layout'
+    });
+});
+
+
 // Add new crop with custom layout (GET request)
 app.get('/admin/edit/:id', (req, res) => {
     res.render('edit-crop', { 
@@ -57,34 +90,22 @@ app.get('/admin/edit/:id', (req, res) => {
     }); 
 });
 
-//  Admin Routes
-// Add new crop (GET request)
-app.get('/admin/add', (req, res) => {
-    res.render('add-crop', { title: 'Add the new crop' }); // render the add-crop page with the title 'Add the new crop'
+
+// Admin settings page with custom layout (GET request)
+app.get('/settings', (req, res) => {
+    res.render('settings', { 
+        title: 'Settings',
+        layout: 'admin-layout' 
+    }); 
 });
 
 
-// Admin dashboard (GET request)
-app.get('/admin/dashboard', (req, res) => {
-    res.render('admin-dashboard', { title: 'Admin Dashboard' }); // render the admin-dashboard page with the title 'Admin Dashboard'
-
+app.get('/notifications', (req, res) => {
+    res.render('notifications', { 
+        title: 'Notifications',
+        layout: 'admin-layout' 
+    }); 
 });
-
-
-// Edit crop (GET request)
-app.get('/admin/edit/:id', (req, res) => {
-    res.render('edit-crop', { title: 'Edit crop details' });  // render the edit-crop page with the title 'Edit crop details'
-    
-});
-
-
-// Crop details (GET request)
-app.get('/crops/:id', (req, res) => {
-    res.render('crop-details', { title: 'Crop details' }); // render the crop-details page with the title 'Crop details'
-    
-});
-
-
 
 
 app.use(express.static('public')); // serve static files from the 'public' directory

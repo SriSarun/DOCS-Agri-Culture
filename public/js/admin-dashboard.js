@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td class="p-3">${crop.name}</td>
                         <td class="p-3">${crop.sowingSeason || 'N/A'}</td>
                         <td class="p-3 text-center">
+                            <a href="/crops/${crop._id}" class="text-green-600 hover:text-green-800 font-semibold transition-colors duration-200 mr-4" > View </a>
                             <a href="/admin/edit/${crop._id}" class="text-blue-600 hover:underline mr-4"> Edit </a>
                             <button data-id="${crop._id}" class="delete-btn text-red-600 hover:underline"> Delete </button>
                         </td>

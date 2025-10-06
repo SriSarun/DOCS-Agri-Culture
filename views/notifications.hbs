@@ -1,0 +1,67 @@
+<div>
+    <h1 class="text-3xl font-bold text-gray-800 mb-8">Create and Send Notifications</h1>
+
+    <!-- Form to create a new notification -->
+    <div class="bg-white p-6 rounded-xl shadow-lg mb-10">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-3">New Notification</h2>
+        <form id="notification-form">
+            <div class="space-y-4">
+                <!-- Notification Title -->
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                    <input type="text" id="title" name="title" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500">
+                </div>
+                
+                <!-- Notification Message -->
+                <div>
+                    <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
+                    <textarea id="message" name="message" rows="4" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"></textarea>
+                </div>
+
+                <!-- Target User Groups -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Target Audience</label>
+                    <p class="text-xs text-gray-500">Select which user groups will receive this notification.</p>
+                    <div class="mt-2 space-y-2">
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="targetGroup" value="farmers" class="rounded border-gray-300 text-green-600 shadow-sm">
+                            <span class="ml-2">Farmers</span>
+                        </label>
+                        <label class="inline-flex items-center ml-4">
+                            <input type="checkbox" name="targetGroup" value="sellers" class="rounded border-gray-300 text-green-600 shadow-sm">
+                            <span class="ml-2">Shop Sellers</span>
+                        </label>
+                        <label class="inline-flex items-center ml-4">
+                            <input type="checkbox" name="targetGroup" value="customers" class="rounded border-gray-300 text-green-600 shadow-sm">
+                            <span class="ml-2">Customers</span>
+                        </label>
+                         <label class="inline-flex items-center ml-4">
+                            <input type="checkbox" id="select-all" class="rounded border-gray-300 text-green-600 shadow-sm">
+                            <span class="ml-2 font-semibold">Select All</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="mt-6 flex justify-end">
+                <button type="submit" class="bg-green-700 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-800 transition-all">
+                    Send Notification
+                </button>
+            </div>
+        </form>
+         <div id="form-message" class="mt-4 text-center"></div>
+    </div>
+
+    <!-- Section to display previously sent notifications -->
+    <div class="bg-white p-6 rounded-xl shadow-lg">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-3">Sent Notifications</h2>
+        <div id="sent-notifications-list" class="space-y-4">
+            <!-- Notifications will be loaded here by JavaScript -->
+            <p>Loading sent notifications...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Link to the specific JavaScript for this page -->
+<script src="/js/admin-notifications.js"></script>

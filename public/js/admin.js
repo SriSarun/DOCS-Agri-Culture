@@ -7,13 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const stagesContainer = document.getElementById('growth-stages-container');
     const diseasesContainer = document.getElementById('diseases-container');
     const fertilizersContainer = document.getElementById('fertilizers-container');
-    const pricesContainer = document.getElementById('prices-container');
+    
 
     // Buttons to add new dynamic fields
     const addStageBtn = document.getElementById('add-stage-btn');
     const addDiseaseBtn = document.getElementById('add-disease-btn');
     const addFertilizerBtn = document.getElementById('add-fertilizer-btn');
-    const addPriceBtn = document.getElementById('add-price-btn');
+    
 
 
 
@@ -27,6 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <button type="button" class="remove-btn md:col-span-1 text-red-500 font-bold justify-self-center">X</button>
         </div>
     `;
+
+
 
     // Similar functions for diseases, fertilizers, and prices
     const createDiseaseHTML = () => `
@@ -58,25 +60,14 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
 
-    // Function to create HTML for a price entry
-    const createPriceHTML = () => `
-        <div class="dynamic-entry grid grid-cols-1 md:grid-cols-7 gap-2 items-center">
-            <input type="date" name="priceDate" class="md:col-span-2 p-2 border rounded">
-            <select name="priceLocation" class="md:col-span-2 p-2 border rounded">
-                <option value="Market"> Market </option>
-                <option value="Shop"> Shop </option>
-            </select>
-            <input type="number" name="priceValue" placeholder="Price (₹/kg)" class="md:col-span-2 p-2 border rounded">
-            <button type="button" class="remove-btn md:col-span-1 text-red-500 font-bold justify-self-center">X</button>
-        </div>
-    `;
+    
 
     // Add similar createFertilizerHTML and createPriceHTML functions here...
     // --- Event Listeners for adding dynamic fields ---
     addStageBtn.addEventListener('click', () => stagesContainer.insertAdjacentHTML('beforeend', createStageHTML()));
     addDiseaseBtn.addEventListener('click', () => diseasesContainer.insertAdjacentHTML('beforeend', createDiseaseHTML()));
     addFertilizerBtn.addEventListener('click', () => fertilizersContainer.insertAdjacentHTML('beforeend', createFertilizerHTML()));
-    addPriceBtn.addEventListener('click', () => pricesContainer.insertAdjacentHTML('beforeend', createPriceHTML()));
+    
 
    
     // Generic remove button handler using event delegation
@@ -98,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
             growthStages: [],
             diseases: [],
             fertilizerRecommendation: { general: [], organic: [] }, 
-            marketPriceHistory: [] 
+           
             
         };
 
@@ -131,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
           // Collect dynamic fertilizers
         fertilizersContainer.querySelectorAll('.dynamic-entry').forEach(entry => {
             const type = entry.querySelector('[name="fertilizerType"]').value;
-            const name = entry.querySelector('[name-="fertilizerName"]').value;
+            const name = entry.querySelector('[name="fertilizerName"]').value;
             if (name) {
                 const fertilizerData = {
                     name: name,
@@ -148,18 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Collect dynamic prices
-        pricesContainer.querySelectorAll('.dynamic-entry').forEach(entry => {
-            const date = entry.querySelector('[name="priceDate"]').value;
-            const price = entry.querySelector('[name="priceValue"]').value;
-            if (date && price) {
-                textData.marketPriceHistory.push({
-                    date: date,
-                    location: entry.querySelector('[name="priceLocation"]').value,
-                    price: parseFloat(price)
-                });
-            }
-        });
+        
 
         // Create a FormData object to handle both text and files
         const formData = new FormData();
@@ -188,10 +168,9 @@ document.addEventListener('DOMContentLoaded', () => {
         messageDiv.className = 'text-blue-600';
 
         try {
-            // 5. Send the FormData object using fetch
+            // Send the FormData object using fetch
             const response = await fetch('/api/crops', {
                 method: 'POST',
-                // DO NOT set Content-Type header. The browser will set it correctly for FormData.
                 body: formData,
             });
 
@@ -205,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
             stagesContainer.innerHTML = '';
             diseasesContainer.innerHTML = '';
             fertilizersContainer.innerHTML = '';
-            pricesContainer.innerHTML = '';
+           
 
         } catch (error) {
             messageDiv.textContent = `Error: ${error.message}`;

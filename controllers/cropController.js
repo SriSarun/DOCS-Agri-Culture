@@ -7,8 +7,8 @@ const { ObjectId } = require('mongodb');
 // Retrieves all crops with optional search and filter parameters
 const getAllCrops = async (req, res) => {
     try {
-        const db = getDB(); // Get MongoDB database instance
-        const { search, season, duration } = req.query; // Extract query parameters
+        const db = getDB(); 
+        const { search, season, duration } = req.query; 
         let query = {}; // Initialize empty query object
         if (search) query.name = { $regex: search, $options: 'i' }; // Case-insensitive search by crop name
         if (season) query.sowingSeason = season; // Filter by sowing season
@@ -28,7 +28,7 @@ const getAllCrops = async (req, res) => {
 // Retrieves distinct filter options for seasons and durations
 const getFilterOptions = async (req, res) => {
     try {
-        const db = getDB(); // Get MongoDB database instance
+        const db = getDB(); 
         const [seasons, durations] = await Promise.all([
             db.collection('crops').distinct('sowingSeason'), // Get unique sowing seasons
             db.collection('crops').distinct('growthDuration') // Get unique growth durations
@@ -200,6 +200,27 @@ const getCropPriceAnalytics = async (req, res) => {
 };
 
 
+// GET /api/stats/totals
+// Retrieves total counts for various entities (e.g., total crops)
+const getStatsTotals = async (req, res) => {
+    try {
+        const db = getDB();
+        // countDocuments() is a very efficient MongoDB method to get the total count.
+        const totalCrops = await db.collection('crops').countDocuments();
+
+        // We can add more stats here in the future (e.g., total users, total notifications)
+        const stats = {
+            totalCrops: totalCrops
+        };
+
+        res.status(200).json(stats);
+
+    } catch (err) {
+        console.error('Error fetching stats totals:', err);
+        res.status(500).json({ message: 'Error fetching stats totals' });
+    }
+};
+
 
 // Export all controller functions
 module.exports = {
@@ -209,5 +230,6 @@ module.exports = {
     getCropById,
     updateCrop,
     deleteCrop,
-    getCropPriceAnalytics
+    getStatsTotals
+
 };

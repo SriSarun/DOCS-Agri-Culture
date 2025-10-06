@@ -1,8 +1,11 @@
-const express = require('express'); // Import express
-const router = express.Router(); // Create a new router instance
-const { upload, resizeAndSaveImages } = require('../middleware/upload'); // Import middleware for file upload
 
-// Import controller functions for crops
+const express = require('express');
+const router = express.Router();
+const { upload, resizeAndSaveImages } = require('../middleware/upload');
+
+
+
+// Import the controller functions
 const {
     getAllCrops,
     getFilterOptions,
@@ -10,33 +13,23 @@ const {
     getCropById,
     updateCrop,
     deleteCrop,
-    getCropPriceAnalytics,
-    
+    getStatsTotals
 } = require('../controllers/cropController');
 
 
-// Define the routes for the crops API
-router.get('/crops/filter', getFilterOptions);
-router.delete('/crops/:id', deleteCrop);
+
+// Define the routes and associate them with controller functions
+router.get('/crops/filters', getFilterOptions);
 router.get('/crops/:id', getCropById);
-router.get('/crops/:id/price-analytics', getCropPriceAnalytics);
 router.get('/crops', getAllCrops);
+router.get('/stats/totals', getStatsTotals);
 
 
-// POST /api/crops - Add a new crop with file uploads
-router.post(
-    '/crops',
-    upload.any(), 
-    resizeAndSaveImages,
-    addCrop
-);
 
-// PUT /api/crops/:id - Update a crop with file uploads
-router.put(
-    '/crops/:id',
-    upload.any(), 
-    resizeAndSaveImages,
-    updateCrop
-);
+// Routes that handle file uploads
+router.post('/crops', upload.any(), resizeAndSaveImages, addCrop);
+router.put('/crops/:id', upload.any(), resizeAndSaveImages, updateCrop);
+router.delete('/crops/:id', deleteCrop);
 
-module.exports = router; // Export the router for use in the main app file
+
+module.exports = router;

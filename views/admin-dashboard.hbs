@@ -1,32 +1,52 @@
-<!-- Main heading for the admin dashboard page -->
-<h1 class="text-3xl font-bold text-center text-green-800 mb-8">Admin Dashboard</h1>
+<div>
+    <!-- 1. Page Header and "Add New" Button -->
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-8">
+        <!-- Main heading for the page -->
+        <h1 class="text-3xl font-bold text-gray-800 mb-4 sm:mb-0">
+            Crop Management
+        </h1>
+        
+        <!-- "Add New Crop" button, styled as a primary action button -->
+        <a href="/admin/add" class="bg-green-600 text-white font-bold py-2 px-5 rounded-lg hover:bg-green-700 transition duration-300 flex items-center shadow-md">
+            <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Add New Crop
+        </a>
+    </div>
 
+    <!-- 2. Container for the crop data table -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <!-- Table header -->
+                <thead class="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            Crop Name
+                        </th>
+                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            Sowing Season
+                        </th>
+                        <th scope="col" class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
 
-<!-- Container for the crop data table with styling -->
-<div class="bg-white p-8 rounded-lg shadow-md">
-    <div class="overflow-x-auto">
-        <table class="min-w-full">
-
-            <!-- Table header with column titles -->
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="p-3 text-left">Crop Name</th>
-                    <th class="p-3 text-left">Sowing Season</th>
-                    <th class="p-3 text-center">Actions</th>
-                </tr>
-            </thead>
-
-
-            <!-- Table body for dynamically populated crop data -->
-            <tbody id="crop-table-body">
-                <tr>
-                    <td colspan="3" class="p-4 text-center text-gray-500">Loading data...</td>
-                </tr>
-            </tbody>
-        </table>
+                <!-- Table body where data will be loaded by JavaScript -->
+                <tbody id="crop-table-body" class="divide-y divide-gray-200">
+                    <!-- Initial loading message -->
+                    <tr>
+                        <td colspan="3" class="px-6 py-12 text-center text-gray-500">
+                            Loading data...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-
-<!-- Include the admin dashboard JavaScript file for table functionality -->
+<!-- JavaScript for table functionality -->
 <script src="/js/admin-dashboard.js"></script>
