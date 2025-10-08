@@ -1,4 +1,4 @@
-document.activeElement('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     const totalCropsStatElement = document.getElementById('total-crops-stat');
 
 

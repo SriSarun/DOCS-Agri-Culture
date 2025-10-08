@@ -2,6 +2,7 @@
 const express = require('express'); 
 const { engine } = require('express-handlebars'); // Import handlebars
 const path = require('path'); // Import path module
+const cors = require('cors'); // Import cors
 const { connectDB } = require('./config/db'); // Import the database connection functions
 const cropRoutes = require('./routes/cropRoutes');  // Import the crop routes
 
@@ -12,6 +13,7 @@ const PORT = 3000; // Set the port number
 
 
 // Middleware to parse JSON data from AJAX requests
+app.use(cors()); // Enable CORS
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
