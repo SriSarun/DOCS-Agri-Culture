@@ -1,0 +1,13 @@
+
+<div *ngIf="!crop">
+  <p>Loading details...</p>
+</div>
+
+
+<div *ngIf="crop">
+  <h1 class="text-4xl font-bold text-green-800">{{ crop.name }}</h1>
+  <p class="text-lg text-gray-600 mt-2">
+    {{ crop.sowingSeason }}
+  </p>
+  
+</div>
