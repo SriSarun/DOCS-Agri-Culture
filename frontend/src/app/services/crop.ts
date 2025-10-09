@@ -21,4 +21,14 @@ export class CropService {
   return this.http.get<any>(`${this.apiUrl}/crops/${id}`);
   }
 
+  // Method to delete crop
+  deleteCrop(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/crops/${id}`);
+  }
+
+  // Method to total crop
+  getStats(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/stats/totals`);
+  }
+
 }

@@ -1,0 +1,62 @@
+<h1 class="text-3xl font-bold text-gray-800 mb-8">Add New Crop</h1>
+
+<form [formGroup]="cropForm" (ngSubmit)="onSubmit()" class="bg-white p-8 rounded-xl shadow-lg space-y-8">
+
+  <!-- Basic Details & Images -->
+  <fieldset class="border p-4 rounded-lg">
+    <legend class="text-xl font-semibold px-2">Basic Details & Images</legend>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <input formControlName="name" placeholder="Crop Name" class="p-2 border rounded">
+      <input formControlName="sowingSeason" placeholder="Sowing Season" class="p-2 border rounded">
+      <input formControlName="growthDuration" placeholder="Growth Duration" class="p-2 border rounded">
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      <div>
+        <label>Cover Image:</label>
+        <input type="file" (change)="onFileChange($event, 'coverImage')">
+      </div>
+      <div>
+        <label>Gallery Images:</label>
+        <input type="file" (change)="onFileChange($event, 'galleryImages')" multiple>
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- Growth Stages (FormArray) -->
+  <fieldset class="border p-4 rounded-lg">
+    <legend class="text-xl font-semibold px-2">Growth Stages</legend>
+    <div formArrayName="growthStages" class="space-y-3">
+      <div *ngFor="let stage of growthStages.controls; let i=index" [formGroupName]="i" class="dynamic-entry grid grid-cols-6 gap-2 items-center">
+        <input formControlName="stageName" placeholder="Stage Name" class="col-span-3 p-2 border rounded">
+        <input formControlName="durationDays" placeholder="Duration" class="col-span-2 p-2 border rounded">
+        <button type="button" (click)="removeStage(i)" class="col-span-1 text-red-500 font-bold">X</button>
+      </div>
+    </div>
+    <button type="button" (click)="addStage()" class="mt-2 bg-gray-500 text-white text-sm py-1 px-3 rounded">+ Add Stage</button>
+  </fieldset>
+
+
+  <!-- Disease Management (FormArray) -->
+  <fieldset class="border p-4 rounded-lg">
+    <legend class="text-xl font-semibold px-2">Diseases</legend>
+    <div formArrayName="diseases" class="space-y-4">
+      <div *ngFor="let disease of diseases.controls; let i=index" [formGroupName]="i" class="dynamic-entry border p-3 rounded bg-gray-50 relative">
+        <div class="grid grid-cols-2 gap-3">
+          <input formControlName="diseaseName" placeholder="Disease Name" class="p-1 border rounded">
+          <input formControlName="symptoms" placeholder="Symptoms" class="p-1 border rounded">
+          <textarea formControlName="causes" placeholder="Causes (comma-separated)" class="p-1 border rounded col-span-2"></textarea>
+          <input type="file" (change)="onFileChange($event, 'diseaseImage', i)" class="col-span-2 text-xs">
+        </div>
+        <button type="button" (click)="removeDisease(i)" class="absolute top-2 right-2 text-red-500 font-bold">X</button>
+      </div>
+    </div>
+    <button type="button" (click)="addDisease()" class="mt-2 bg-gray-500 text-white text-sm py-1 px-3 rounded">+ Add Disease</button>
+  </fieldset>
+  
+
+  <!-- Submit Button -->
+  <div class="text-center">
+    <button type="submit" [disabled]="cropForm.invalid" class="bg-blue-700 text-white font-bold py-3 px-8 rounded-lg disabled:bg-gray-400">Save Crop</button>
+  </div>
+</form>

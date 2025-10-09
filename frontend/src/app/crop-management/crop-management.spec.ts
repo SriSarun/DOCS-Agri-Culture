@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CropList } from './crop-list';
+import { CropManagement } from './crop-management';
 
-describe('CropList', () => {
-  let component: CropList;
-  let fixture: ComponentFixture<CropList>;
+describe('CropManagement', () => {
+  let component: CropManagement;
+  let fixture: ComponentFixture<CropManagement>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CropList]
+      imports: [CropManagement]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CropList);
+    fixture = TestBed.createComponent(CropManagement);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
