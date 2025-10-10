@@ -31,4 +31,9 @@ export class CropService {
     return this.http.get<any>(`${this.apiUrl}/stats/totals`);
   }
 
+  // Method to add crop
+  addCrop(formData: FormData): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/crops`, formData);
+  }
+
 }
